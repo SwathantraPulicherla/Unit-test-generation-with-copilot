@@ -1,30 +1,25 @@
-name: C Test & Coverage
+CC=gcc
+CFLAGS=-fprofile-arcs -ftest-coverage -I.
+SRC=calculator.c test_calculator.c unity.c
+OUT=test_runner
 
-on: [push, pull_request]
+all: $(OUT)
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+$(OUT): $(SRC)
+    $(CC) $(CFLAGS) $(SRC) -o $(OUT)
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y gcc gcov lcov
+run: all
+    ./$(OUT)
 
-      - name: Build with coverage flags
-        run: make
+coverage: run
+    lcov --capture --directory . --output-file coverage.info
+    lcov --extract coverage.info "$(PWD)/calculator.c" --output-file coverage.info
+    genhtml coverage.info --output-directory coverage-report
+    @echo 'Open coverage report with: "$$BROWSER" coverage-report/index.html'
 
-      - name: Run tests
-        run: make run
+open-coverage: coverage
+    "$(BROWSER)" coverage-report/index.html
 
-      - name: Collect lcov coverage
-        run: |
-          lcov --capture --directory . --output-file coverage.info
-          lcov --extract coverage.info "$(pwd)/calculator.c" --output-file coverage.info
-          genhtml coverage.info --output-directory coverage-report
-
-      - name: Deploy coverage to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./coverage-report
+clean:
+    rm -f $(OUT) *.gcda *.gcno *.gcov coverage.info
+    rm -rf coverage-report
