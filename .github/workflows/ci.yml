@@ -33,33 +33,21 @@ jobs:
           path: coverage-report
 
   deploy-coverage:
-  needs: test
-  runs-on: ubuntu-latest
-  if: github.ref == 'refs/heads/main'  # only deploy from main branch
-  permissions:
-    contents: read
-    pages: write
-    id-token: write
-  environment:
-    name: github-pages   # REQUIRED
-    url: ${{ steps.deployment.outputs.page_url }}
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # only deploy from main branch
+    steps:
+      - uses: actions/checkout@v4
 
-  steps:
-    - name: Download coverage artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: coverage-report
-        path: ./coverage-report
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: ./coverage-report
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v5
-
-    - name: Upload Pages artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: ./coverage-report
-
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
-
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./coverage-report
