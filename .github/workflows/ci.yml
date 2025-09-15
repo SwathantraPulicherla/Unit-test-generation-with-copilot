@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   pull_request:
 
+permissions:
+  contents: write   # 👈 needed for pushing to gh-pages
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -46,8 +49,14 @@ jobs:
           path: ./coverage-report
 
       - name: Deploy to gh-pages branch
+        id: deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./coverage-report
+
+      - name: Add coverage link to summary
+        run: |
+          echo "## ✅ Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "[View Coverage Report](https://swathantrapulicherla.github.io/Unit-test-generation-with-copilot/)" >> $GITHUB_STEP_SUMMARY
