@@ -12,10 +12,10 @@ run: all
 	./$(OUT)
 
 coverage: run
-	lcov --capture --directory . --output-file coverage.info
-	lcov --extract coverage.info "$(PWD)/calculator.c" --output-file coverage.info
-	genhtml coverage.info --output-directory coverage-report
-	@echo 'Open coverage report with: "$$BROWSER" coverage-report/index.html'
+    lcov --capture --directory . --output-file coverage.info
+    lcov --extract coverage.info "$(PWD)/calculator.c" --output-file coverage.info
+    genhtml coverage.info --output-directory coverage-report
+    @echo 'Open coverage report with: "$$BROWSER" coverage-report/index.html'
 
 open-coverage: coverage
 	"$(BROWSER)" coverage-report/index.html
