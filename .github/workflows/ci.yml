@@ -20,7 +20,7 @@ jobs:
       - name: Collect lcov coverage
         run: |
           lcov --capture --directory . --output-file coverage.info
-          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info --ignore-errors unused
           genhtml coverage.info --output-directory coverage-report
 
       - name: Upload coverage report artifact
