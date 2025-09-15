@@ -27,5 +27,6 @@ int main(void) {
     RUN_TEST(test_add_neg);
     RUN_TEST(test_add_both_neg);
     RUN_TEST(test_add_zero);
-    return UNITY_END();
+    UNITY_END();
+    return 0;
 }
